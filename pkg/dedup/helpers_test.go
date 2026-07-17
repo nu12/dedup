@@ -14,12 +14,11 @@ type FakeRead struct {
 	Text string
 }
 
-func (this *FakeRead) Read(p []byte) (n int, err error) {
-	p = []byte(this.Text)
-	return len(this.Text), nil
+func (fake *FakeRead) Read(p []byte) (n int, err error) {
+	return len(fake.Text), nil
 }
 
-func (this *FakeRead) Close() error {
+func (fake *FakeRead) Close() error {
 	return nil
 }
 
@@ -81,10 +80,10 @@ type FakeDirEntry struct {
 	Error    error
 }
 
-func (this *FakeDirEntry) Name() string               { return "" }
-func (this *FakeDirEntry) IsDir() bool                { return this.FileInfo.IsDir() }
-func (this *FakeDirEntry) Type() fs.FileMode          { return this.FileInfo.Mode() }
-func (this *FakeDirEntry) Info() (fs.FileInfo, error) { return this.FileInfo, this.Error }
+func (fake *FakeDirEntry) Name() string               { return "" }
+func (fake *FakeDirEntry) IsDir() bool                { return fake.FileInfo.IsDir() }
+func (fake *FakeDirEntry) Type() fs.FileMode          { return fake.FileInfo.Mode() }
+func (fake *FakeDirEntry) Info() (fs.FileInfo, error) { return fake.FileInfo, fake.Error }
 
 type FakeFileInfo struct {
 	FileName    string
@@ -95,12 +94,12 @@ type FakeFileInfo struct {
 	FileSys     any
 }
 
-func (this *FakeFileInfo) Name() string       { return this.FileName }
-func (this *FakeFileInfo) Size() int64        { return this.FileSize }
-func (this *FakeFileInfo) Mode() fs.FileMode  { return this.FileMode }
-func (this *FakeFileInfo) ModTime() time.Time { return this.FileModTime }
-func (this *FakeFileInfo) IsDir() bool        { return this.FileDir }
-func (this *FakeFileInfo) Sys() any           { return this.FileSys }
+func (fake *FakeFileInfo) Name() string       { return fake.FileName }
+func (fake *FakeFileInfo) Size() int64        { return fake.FileSize }
+func (fake *FakeFileInfo) Mode() fs.FileMode  { return fake.FileMode }
+func (fake *FakeFileInfo) ModTime() time.Time { return fake.FileModTime }
+func (fake *FakeFileInfo) IsDir() bool        { return fake.FileDir }
+func (fake *FakeFileInfo) Sys() any           { return fake.FileSys }
 
 func TestWalkDir(t *testing.T) {
 	App := &Application{
@@ -196,25 +195,25 @@ func TestMoveFile(t *testing.T) {
 
 	App.RemoveFunc = func(s string) error { return errors.New("Test error") }
 	err = App.MoveFile("", "")
-	if err.Error() != "Couldn't remove source file: Test error" {
-		t.Errorf("Expected %v, got %v", "Couldn't remove source file: Test error", err.Error())
+	if err.Error() != "couldn't remove source file: Test error" {
+		t.Errorf("Expected %v, got %v", "couldn't remove source file: Test error", err.Error())
 	}
 
 	App.CopyFunc = func(w io.Writer, r io.Reader) (written int64, err error) { return 0, errors.New("Test error") }
 	err = App.MoveFile("", "")
-	if err.Error() != "Couldn't copy to dest from source: Test error" {
-		t.Errorf("Expected %v, got %v", "Couldn't copy to dest from source: Test error", err.Error())
+	if err.Error() != "couldn't copy to dest from source: Test error" {
+		t.Errorf("Expected %v, got %v", "couldn't copy to dest from source: Test error", err.Error())
 	}
 
 	App.CreateFunc = func(s string) (io.WriteCloser, error) { return &FakeWriter{}, errors.New("Test error") }
 	err = App.MoveFile("", "")
-	if err.Error() != "Couldn't open dest file: Test error" {
-		t.Errorf("Expected %v, got %v", "Couldn't open dest file: Test error", err.Error())
+	if err.Error() != "couldn't open dest file: Test error" {
+		t.Errorf("Expected %v, got %v", "couldn't open dest file: Test error", err.Error())
 	}
 
 	App.OpenFunc = func(path string) (io.ReadCloser, error) { return &FakeRead{Text: "a"}, errors.New("Test error") }
 	err = App.MoveFile("", "")
-	if err.Error() != "Couldn't open source file: Test error" {
-		t.Errorf("Expected %v, got %v", "Couldn't open source file: Test error", err.Error())
+	if err.Error() != "couldn't open source file: Test error" {
+		t.Errorf("Expected %v, got %v", "couldn't open source file: Test error", err.Error())
 	}
 }

@@ -23,39 +23,39 @@ type Application struct {
 	duplicates  []string
 }
 
-func (this *Application) Init() *Application {
-	this.counter = 0
-	this.duplicates = []string{}
-	this.uniqueFiles = []unique.Handle[string]{}
-	return this
+func (app *Application) Init() *Application {
+	app.counter = 0
+	app.duplicates = []string{}
+	app.uniqueFiles = []unique.Handle[string]{}
+	return app
 }
 
-func (this *Application) Run() error {
-	if err := filepath.WalkDir(this.SourceFolder, this.WalkDir); err != nil {
+func (app *Application) Run() error {
+	if err := filepath.WalkDir(app.SourceFolder, app.WalkDir); err != nil {
 		return err
 	}
-	this.List()
-	if err := this.Move(); err != nil {
+	app.List()
+	if err := app.Move(); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (this *Application) List() {
-	if this.ListFlag {
+func (app *Application) List() {
+	if app.ListFlag {
 		fmt.Println()
-		for _, dup := range this.duplicates {
+		for _, dup := range app.duplicates {
 			fmt.Println(dup)
 		}
 	}
 }
 
-func (this *Application) Move() error {
-	if this.MoveFlag {
+func (app *Application) Move() error {
+	if app.MoveFlag {
 		fmt.Println()
-		fmt.Printf("Moving duplicate files to %s\n", this.DestinationFolder)
-		for _, dup := range this.duplicates {
-			err := this.MoveFile(dup, filepath.Join(this.DestinationFolder, filepath.Base(dup)))
+		fmt.Printf("Moving duplicate files to %s\n", app.DestinationFolder)
+		for _, dup := range app.duplicates {
+			err := app.MoveFile(dup, filepath.Join(app.DestinationFolder, filepath.Base(dup)))
 			if err != nil {
 				return err
 			}
