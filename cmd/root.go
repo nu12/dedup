@@ -55,12 +55,12 @@ var list bool
 var move bool
 
 func init() {
-	rootCmd.PersistentFlags().StringVarP(&sourceFolder, "source", "s", "", "Source folder (to be dedup'ed)")
-	rootCmd.PersistentFlags().StringVarP(&destinationFolder, "destination", "d", "", "Destination folder (for duplicated files)")
-	rootCmd.MarkPersistentFlagRequired("source")
+	rootCmd.Flags().StringVarP(&sourceFolder, "source", "s", "", "Source folder (to be dedup'ed)")
+	rootCmd.Flags().StringVarP(&destinationFolder, "destination", "d", "", "Destination folder (for duplicated files)")
+	rootCmd.MarkFlagRequired("source")
 
-	rootCmd.PersistentFlags().BoolVar(&list, "list", false, "List duplicates")
-	rootCmd.PersistentFlags().BoolVar(&move, "move", false, "Move duplicates")
+	rootCmd.Flags().BoolVar(&list, "list", false, "List duplicates")
+	rootCmd.Flags().BoolVar(&move, "move", false, "Move duplicates")
 	rootCmd.MarkFlagsMutuallyExclusive("list", "move")
 	rootCmd.MarkFlagsRequiredTogether("move", "destination")
 
