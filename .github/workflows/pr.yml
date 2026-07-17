@@ -15,4 +15,5 @@ jobs:
       run-test: true
       run-docker-build: false
       go-version: '1.26.3'
+      docker-tag: 'latest'
     secrets: inherit

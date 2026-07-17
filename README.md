@@ -74,3 +74,9 @@ Flags:
 
 Use "dedup [command] --help" for more information about a command.
 ```
+
+## Release
+
+```
+git tag $(go run main.go version) && git push --tags
+```

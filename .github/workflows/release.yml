@@ -20,4 +20,5 @@ jobs:
       release-darwin-amd64: true
       release-darwin-arm64: true
       release-docker: false
+      version: '${{ github.ref_name }}'
     secrets: inherit

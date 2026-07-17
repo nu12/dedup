@@ -8,70 +8,70 @@ import (
 	"unique"
 )
 
-func (this *Application) Hash(path string) (string, error) {
-	file, err := this.OpenFunc(path)
+func (app *Application) Hash(path string) (string, error) {
+	file, err := app.OpenFunc(path)
 	if err != nil {
 		return "", fmt.Errorf("failed to open file: %w", err)
 	}
 	defer file.Close()
 
 	hash := md5.New()
-	if _, err := this.CopyFunc(hash, file); err != nil {
+	if _, err := app.CopyFunc(hash, file); err != nil {
 		return "", fmt.Errorf("failed to hash file: %w", err)
 	}
 
 	return fmt.Sprintf("%x", hash.Sum(nil)), nil
 }
 
-func (this *Application) LogProgress(clear bool) {
+func (app *Application) LogProgress(clear bool) {
 	if clear {
 		fmt.Printf("\r")
 	}
-	fmt.Printf("%d files processed (%d duplicates found)", this.counter, len(this.duplicates))
+	fmt.Printf("%d files processed (%d duplicates found)", app.counter, len(app.duplicates))
 }
 
-func (this *Application) WalkDir(path string, d fs.DirEntry, err error) error {
+func (app *Application) WalkDir(path string, d fs.DirEntry, err error) error {
 	if err != nil {
 		return err
 	}
-	this.counter++
+	app.counter++
 
 	if !d.IsDir() {
-		h, _ := this.Hash(path)
+		h, _ := app.Hash(path)
 		file := unique.Make(h)
-		if slices.Contains(this.uniqueFiles, file) {
-			this.duplicates = append(this.duplicates, path)
+		if slices.Contains(app.uniqueFiles, file) {
+			app.duplicates = append(app.duplicates, path)
 		} else {
-			this.uniqueFiles = append(this.uniqueFiles, file)
+			app.uniqueFiles = append(app.uniqueFiles, file)
 		}
 	}
-	this.LogProgress(true)
+	app.LogProgress(true)
 	return nil
 }
 
-func (this *Application) MoveFile(sourcePath, destPath string) error {
-	inputFile, err := this.OpenFunc(sourcePath)
+func (app *Application) MoveFile(sourcePath, destPath string) error {
+	inputFile, err := app.OpenFunc(sourcePath)
 	if err != nil {
-		return fmt.Errorf("Couldn't open source file: %v", err)
+		return fmt.Errorf("couldn't open source file: %v", err)
 	}
 	defer inputFile.Close()
 
-	outputFile, err := this.CreateFunc(destPath)
+	outputFile, err := app.CreateFunc(destPath)
 	if err != nil {
-		return fmt.Errorf("Couldn't open dest file: %v", err)
+		return fmt.Errorf("couldn't open dest file: %v", err)
 	}
 	defer outputFile.Close()
 
-	_, err = this.CopyFunc(outputFile, inputFile)
+	_, err = app.CopyFunc(outputFile, inputFile)
 	if err != nil {
-		return fmt.Errorf("Couldn't copy to dest from source: %v", err)
+		return fmt.Errorf("couldn't copy to dest from source: %v", err)
 	}
 
 	inputFile.Close() // for Windows, close before trying to remove: https://stackoverflow.com/a/64943554/246801
 
-	err = this.RemoveFunc(sourcePath)
+	err = app.RemoveFunc(sourcePath)
 	if err != nil {
-		return fmt.Errorf("Couldn't remove source file: %v", err)
+		return fmt.Errorf("couldn't remove source file: %v", err)
 	}
 	return nil
 }
